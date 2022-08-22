@@ -1,0 +1,212 @@
+############################
+## Sampling Rules Config ##
+############################
+
+# Please refer the operators from https://github.com/honeycombio/refinery/blob/76b9477076953faf57cadcad0f349e1616b20751/sample/rules.go#L76
+
+# DryRun - If enabled, marks traces that would be dropped given current sampling rules,
+# and sends all traces regardless
+DryRun = $DRY_RUN
+
+[dev]
+  Sampler = "RulesBasedSampler"
+
+  [[dev.rule]]
+    # if pollers not working we will know because job throughput is low
+    name = "drop AWS SWF pollers"
+    drop = true
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "starts-with"
+      value = "SWF.PollFor"
+
+  [[dev.rule]]
+    # if pollers not working we will know because job throughput is low
+    name = "drop AWS Step Functions poller"
+    drop = true
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "="
+      value = "SFN.GetActivityTask"
+
+  [[dev.rule]]
+    # this currently doesn't contains any information. remove it if you need it
+    name = "drop AWS SNS receive message"
+    drop = true
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "="
+      value = "SQS.ReceiveMessage"
+
+  [[dev.rule]]
+    # remove this when we are not using new relic anymore
+    name = "drop New Relic analytic call"
+    drop = true
+    [[dev.rule.condition]]
+      field = "net.peer.name"
+      operator = "contains"
+      value = ".newrelic.com"
+
+  [[dev.rule]]
+    # we don't care about how railsautoscale works behind the scene
+    name = "drop RailsAutoScale call"
+    drop = true
+    [[dev.rule.condition]]
+      field = "net.peer.name"
+      operator = "="
+      value = "api.railsautoscale.com"
+
+  [[dev.rule]]
+    # we don't care about this metadata distribution, service/library internal behaviour
+    # https://serverfault.com/questions/427018/what-is-this-ip-address-169-254-169-254
+    name = "drop cloud computing metadata distribution call"
+    drop = true
+    [[dev.rule.condition]]
+      field = "net.peer.name"
+      operator = "="
+      value = "169.254.169.254"
+
+  [[dev.rule.condition]]
+    name = "keep all errors"
+    SampleRate = 1
+    [[dev.rule.condition]]
+      field = "error"
+      operator = "exists"
+
+  [[dev.rule]]
+    name = "LINK API > 300ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "starts-with"
+      value = "Link::V1::"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 300
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 100
+      FieldList = ["name"]
+
+  [[dev.rule]]
+    name = "LINK API > 100ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "starts-with"
+      value = "Link::V1::"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 100
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 300
+      FieldList = ["name"]
+
+  [[dev.rule]]
+    name = "LINK API > 0ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "starts-with"
+      value = "Link::V1::"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 0
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 500
+      FieldList = ["name"]
+  
+  [[dev.rule]]
+    name = "Private API > 300ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "starts-with"
+      value = "V8::"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 300
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 100
+      FieldList = ["name"]
+
+  [[dev.rule]]
+    name = "Private API > 100ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "starts-with"
+      value = "V8::"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 100
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 300
+      FieldList = ["name"]
+
+  [[dev.rule]]
+    name = "Private API > 0ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "starts-with"
+      value = "V8::"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 0
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 500
+      FieldList = ["name"]
+
+  [[dev.rule]]
+    name = "Token creation > 300ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "="
+      value = "Oauth::TokensController#create"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 300
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 100
+      FieldList = ["name"]
+
+  [[dev.rule]]
+    name = "Token creation > 100ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "="
+      value = "Oauth::TokensController#create"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 100
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 300
+      FieldList = ["name"]
+
+  [[dev.rule]]
+    name = "Token creation > 0ms"
+    [[dev.rule.condition]]
+      field = "name"
+      operator = "="
+      value = "Oauth::TokensController#create"
+    [[dev.rule.condition]]
+      field = "duration_ms"
+      operator = ">"
+      value = 0
+    [dev.rule.sampler.EMADynamicSampler]
+      Sampler = "EMADynamicSampler"
+      GoalSampleRate = 500
+      FieldList = ["name"]
+
+  [[dev.rule]]
+		SampleRate = 300 # default when no rules match
