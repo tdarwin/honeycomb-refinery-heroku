@@ -28,6 +28,12 @@ Set the config value to allow Refinery to send logs and metrics to your team:
 heroku config:set HC_API_KEY=<HONEYCOMB_API_KEY>
 ```
 
+Set the PORT config value. It should match the standard HTTP_PORT for Refinery (8080):
+
+```bash
+heroku config:set PORT=8080
+```
+
 Set the config value to enable Dry Run Mode. By default, Dry Run is disabled, and sampling will happen:
 
 ```bash
