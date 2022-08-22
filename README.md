@@ -2,6 +2,8 @@
 
 This repository should allow you to create a set of container-based Refinery dynos in your Heroku environment.
 
+NOTE: If you're not using Heroku Enterprise and Private Spaces, you will not be able to scale to multiple Refinery nodes in your cluster.
+
 ## Prep Steps
 
 Create your Heroku App:
