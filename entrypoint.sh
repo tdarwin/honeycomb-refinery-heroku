@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 sed -i "s/\$HC_API_KEY/$HC_API_KEY/g" /etc/refinery/refinery.toml
-sed -i "s/\$HTTP_PORT/${HTTP_PORT:=8080}/g" /etc/refinery/refinery.toml
+sed -i "s/\$PORT/$PORT/g" /etc/refinery/refinery.toml
 sed -i "s/\$GRPC_PORT/${GRPC_PORT:=9090}/g" /etc/refinery/refinery.toml
 sed -i "s/\$PEER_PORT/${PEER_PORT:=8081}/g" /etc/refinery/refinery.toml
 sed -i "s/\$DRY_RUN/${DRY_RUN:=0}/g" /etc/refinery/rules.toml

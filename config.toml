@@ -7,7 +7,7 @@
 # front to do the decryption.
 # Should be of the form 0.0.0.0:8080
 # Not eligible for live reload.
-ListenAddr = "0.0.0.0:$HTTP_PORT"
+ListenAddr = "0.0.0.0:$PORT"
 
 # GRPCListenAddr is the IP and port on which to listen for incoming events over
 # gRPC. Incoming traffic is expected to be unencrypted, so if using SSL put
