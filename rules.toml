@@ -14,12 +14,12 @@ SampleRate = 1
   # 'dev.rule' is how you specify an environment-wide rule
   # This drops all healthchecks across an environment.
   [[dev.rule]]
-    name = "drop healthchecks"
+    name = "drop newrelic checks"
     drop = true
     [[dev.rule.condition]]
-      field = "http.route"
-      operator = "="
-      value = "/health"
+      field = "http.target"
+      operator = "contains"
+      value = "/agent"
 
   # This keeps all 500 errors across an environment.
   [[dev.rule]]
@@ -35,39 +35,16 @@ SampleRate = 1
     SampleRate = 1
     [[dev.rule.condition]]
       field = "http.route"
-      operator = "="
-      value = "/api/v0/user/register"
+      operator = "contains"
+      value = "/signup"
 
   [[dev.rule]]
-    name = "dynamically sample all logins"
+    name = "keep all logins"
+    SampleRate = 1
     [[dev.rule.condition]]
       field = "http.route"
-      operator = "="
-      value = "/api/v0/user/login"
-    [dev.rule.sampler.EMADynamicSampler]
-      Sampler = "EMADynamicSampler"
-      AddSampleRateKeyToTrace = true
-      AddSampleRateKeyToTraceField = "meta.refinery.dynsampler.logins"
-      FieldList = ["http.status_code", "readz.login.user_id"]
-      GoalSampleRate = 50
-    
-  # This dynamically samples all 200 responses across an environment.
-  [[dev.rule]]
-    name = "dynamically sample stories created by users"
-    [[dev.rule.condition]]
-      field = "status_code"
-      operator = "="
-      value = 201
-    [[dev.rule.conditions]]
-      field = "http.route"
-      operator = "="
-      value = "/api/v0/write/<story_type>"
-    [dev.rule.sampler.EMADynamicSampler]
-      Sampler = "EMADynamicSampler"
-      AddSampleRateKeyToTrace = true
-      AddSampleRateKeyToTraceField = "meta.refinery.dynsampler.200s"
-      FieldList = ["http.target", "readz.post_story.user_id"]
-      GoalSampleRate = 15
+      operator = "contains"
+      value = "/login"
 
   # This dynamically samples all 200 responses across an environment.
   [[dev.rule]]
